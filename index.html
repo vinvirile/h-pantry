@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pantry Shop</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        select, input {
+            width: 100%;
+            padding: 5px;
+        }
+        button {
+            margin: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        #totalRow {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pantry Shop</h1>
+    <table id="shopTable">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+        </tbody>
+        <tfoot>
+            <tr id="totalRow">
+                <td colspan="3">Total: $0.00</td>
+            </tr>
+        </tfoot>
+    </table>
+    <button id="addRow">Add Item</button>
+
+    <script>
+        const unsortedItems = {
+            "Candy": 3.50,
+            "Donuts": 3.50,
+            "Chips": 3.50,
+            "Cookies": 4.00,
+            "Crackers": 3.50,
+            "Peanuts": 4.00,
+            "Beef Jerky": 7.00,
+            "Pop Tarts": 5.00,
+            "Mac and Cheese": 4.00,
+            "Tuna Kit": 7.00,
+            "Popcorn": 4.00,
+            "Fruit": 1.89,
+            "Fruit Bowl": 7.00,
+            "Sandwich with Chips": 10.50,
+            "Chicken Caesar Salad": 15.50,
+            "Tuna Salad": 7.00,
+            "Cheesecake": 7.00,
+            "Wine (750ml)": 30.00,
+            "Wine (187ml)": 10.00,
+            "Beer": 8.00,
+            "Core / Smart / Fiji Water": 7.00,
+            "Topo Chico": 7.00,
+            "Bottle Soda": 3.50,
+            "Can Soda": 2.50,
+            "Juice": 3.50,
+            "Body Armor": 7.00,
+            "Red Bull": 7.00,
+            "Ice Cream Bars": 4.00,
+            "Ice Cream Pints": 8.00,
+            "Frozen Dinner": 8.00,
+            "Hot Pocket": 5.00,
+            "Chicken Sandwich": 6.00,
+            "Tooth Brush": 7.00,
+            "Toothpaste": 6.00,
+            "Noodles": 6.00,
+            "Laundry Detergent": 2.00
+        };
+
+        const items = Object.keys(unsortedItems).sort().reduce(
+            (obj, key) => { 
+                obj[key] = unsortedItems[key]; 
+                return obj;
+            }, 
+            {}
+        );
+
+        function createRow() {
+            const row = document.createElement('tr');
+            
+            const itemCell = document.createElement('td');
+            const itemSelect = document.createElement('select');
+            itemSelect.innerHTML = `<option value="">Select an item</option>` +
+                Object.entries(items).map(([item, price]) => `<option value="${item}">${item} - $${price.toFixed(2)}</option>`).join('');
+            itemSelect.addEventListener('change', updateTotal);
+            itemCell.appendChild(itemSelect);
+            
+            const quantityCell = document.createElement('td');
+            const quantityInput = document.createElement('input');
+            quantityInput.type = 'number';
+            quantityInput.min = '0';
+            quantityInput.value = '0';
+            quantityInput.addEventListener('input', updateTotal);
+            quantityCell.appendChild(quantityInput);
+            
+            const actionCell = document.createElement('td');
+            const removeButton = document.createElement('button');
+            removeButton.textContent = 'Remove';
+            removeButton.addEventListener('click', () => {
+                row.remove();
+                updateTotal();
+            });
+            actionCell.appendChild(removeButton);
+            
+            row.appendChild(itemCell);
+            row.appendChild(quantityCell);
+            row.appendChild(actionCell);
+            
+            return row;
+        }
+
+        function updateTotal() {
+            let total = 0;
+            const rows = document.querySelectorAll('#tableBody tr');
+            rows.forEach(row => {
+                const item = row.querySelector('select').value;
+                const quantity = parseInt(row.querySelector('input').value) || 0;
+                if (item && items[item]) {
+                    total += items[item] * quantity;
+                }
+            });
+            document.getElementById('totalRow').firstElementChild.textContent = `Total: $${total.toFixed(2)}`;
+        }
+
+        document.getElementById('addRow').addEventListener('click', () => {
+            document.getElementById('tableBody').appendChild(createRow());
+        });
+
+        // Add initial row
+        document.getElementById('tableBody').appendChild(createRow());
+    </script>
+</body>
+</html>
