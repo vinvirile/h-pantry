@@ -24,7 +24,7 @@
             background-color: #f2f2f2;
         }
         select, input {
-            width: 100%;
+            width: 95%;
             padding: 5px;
         }
         button {
@@ -149,7 +149,7 @@
             const rows = document.querySelectorAll('#tableBody tr');
             rows.forEach(row => {
                 const item = row.querySelector('select').value;
-                const quantity = parseInt(row.querySelector('input').value) || 0;
+                const quantity = parseInt(row.querySelector('input').value) || 1;
                 if (item && items[item]) {
                     total += items[item] * quantity;
                 }
